@@ -1,7 +1,11 @@
-from flask import Flask
+import flask
 from flask_oauth import OAuth
 
-app = Flask(__name__)
+app = flask.Flask(__name__)
+app.debug = True
+#app.config['PROPAGATE_EXCEPTIONS'] = True
+app.secret_key = 'i&ACb>P_ECp^%WDQYBGNLkDh>nwvDi9WFRoX~HhSqGs5j.?|msaS%i|;mN{|%1%+'
+
 oauth = OAuth()
 
 FACEBOOK_APP_ID = '391076870930417'
@@ -23,17 +27,17 @@ def home():
 
 @app.route('/login')
 def login():
-    facebook.authorize(callback=url_for('crunch',
-        next=request.args.get('next') or request.referrer or None))
+    return facebook.authorize(callback=flask.url_for('crunch', _external=True))
 
 @app.route('/crunch')
-def crunch():
+@facebook.authorized_handler
+def crunch(resp):
     if resp is None:
         flash(u'You denied the request to sign in.')
         return
 
-    print session
-    return session
+    print resp
+    return "You're logged in, bitch"
 
 if __name__ == "__main__":
     app.run()
